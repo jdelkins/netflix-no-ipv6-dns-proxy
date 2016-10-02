@@ -2,7 +2,7 @@
 
 OPTIONS = {
     # Port to bind to.
-    'listen-port': 53,
+    'listen-port': 2053,
 
     # Address to bind to.  '::' will bind IPv6; make sure bindv6only is 0 in
     # your sysctl configuration for this binding to service IPv4 clients, too.
@@ -15,6 +15,7 @@ OPTIONS = {
     # Specify one or more servers to proxy to.  Note that Twisted may not be
     # happy if you use an IPv6 address.
     # 'upstream-dns': [('127.0.0.1', 10053)],
+    'upstream-dns': [('8.8.8.8', 53), ('8.8.4.4', 53)],
 
     # Specify a resolv.conf file from which to read upstream nameservers.  As
     # noted above, if you have any upstream IPv6 servers, Twisted may not be
@@ -40,7 +41,7 @@ from twisted.names import client, dns, error, server
 
 class BlockNetflixAAAAResolver(object):
     def __shouldBlock(self, query):
-        penultimateDomainPart = query.name.name.split('.')[-2]
+        penultimateDomainPart = query.name.name.decode().split('.')[-2]
 
         return query.type == dns.AAAA and penultimateDomainPart in ('netflix', 'nflximg')
 
